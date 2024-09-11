@@ -3,7 +3,7 @@ from datetime import datetime
 import numpy as np
 from scipy.stats import norm
 
-from .option import OptionPricingModel
+from ..option import OptionPricingModel
 
 class BlackScholesMerton(OptionPricingModel):
 

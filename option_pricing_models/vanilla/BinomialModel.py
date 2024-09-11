@@ -2,7 +2,7 @@ from datetime import datetime
 
 import numpy as np
 
-from .option import OptionPricingModel
+from ..option import OptionPricingModel
 
 class BinomialModel(OptionPricingModel):
 
@@ -66,15 +66,13 @@ class BinomialModel(OptionPricingModel):
         else:
             return self.__call_option_price()
 
-    def __asset_price_tree(self) -> np.array:
+    def __asset_price_at_maturity(self) -> np.array:
         """
         
         """
         self._check_positive(self.time_steps, 'Time steps')
-
-        # Price at maturity
-        S_T = np.array( [self.S * self.u**i * self.d**(self.time_steps - i) for i in range(self.time_steps + 1)] )
-        return S_T
+        
+        return np.array( [self.S * self.u**i * self.d**(self.time_steps - i) for i in range(self.time_steps + 1)] )
 
     def __call_option_price(self) -> float:
         """
@@ -84,7 +82,7 @@ class BinomialModel(OptionPricingModel):
         V = np.zeros(self.time_steps + 1)
 
         # Option value at maturity T
-        V[:] = np.maximum(self.__asset_price_tree() - self.K, 0)
+        V[:] = np.maximum(self.__asset_price_at_maturity() - self.K, 0)
 
         # Calculate option value at each time step
         for i in range(self.time_steps - 1, -1, -1):
@@ -100,7 +98,7 @@ class BinomialModel(OptionPricingModel):
         V = np.zeros(self.time_steps + 1)
 
         # Option value at maturity T
-        V[:] = np.maximum(self.K - self.__asset_price_tree(), 0)
+        V[:] = np.maximum(self.K - self.__asset_price_at_maturity(), 0)
 
         # Calculate option value at each time step
         for i in range(self.time_steps - 1, -1, -1):

@@ -18,10 +18,11 @@ class OptionPricingModel(ABC):
         if start_date and end_date:
             return (end_date - start_date).days / 365
         
-        if days_to_maturity:
+        elif days_to_maturity:
             return days_to_maturity / 365
 
-        raise ValueError('Error in fetching time_to_maturity data. Both start_date and end_date must be valid, or days_to_maturity should be entered.')
+        else:
+            raise ValueError('Error in fetching time_to_maturity data. Both start_date and end_date must be valid, or days_to_maturity must be entered.')
 
     @staticmethod
     def _check_positive(parameter: float, message='') -> None:

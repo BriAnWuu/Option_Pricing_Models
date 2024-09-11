@@ -2,13 +2,13 @@ from datetime import datetime
 
 import numpy as np
 
-from .option import OptionPricingModel
+from ..option import OptionPricingModel
 
 class MonteCarloSimulation(OptionPricingModel):
 
     def __init__(self, instrument:str, option_type: str, spot_price: float, strike_price: float, risk_free_rate: float, sigma: float, dividend:float=0, days_to_maturity: float=None, start_date: datetime=None, end_date: datetime=None, time_steps: int=1000, simulations: int=100_000):
         """
-        
+        Longstaff Schwartz Monte Carlo
         """
         self.instrument = instrument
         self.option_type = option_type.lower()
@@ -65,16 +65,16 @@ class MonteCarloSimulation(OptionPricingModel):
             # ST = St * exp[(drift) + sigma * sqrt(dT) * diffusion]
             S_t[i] = S_t[i-1] * np.exp((self.r - self.dividend - 0.5 * self.sigma**2) * self.dT + self.sigma * np.sqrt(self.dT) * np.random.normal(size=self.simulations))
 
-        return S_t
+        return S_t[-1]
 
     def __call_option_price(self) -> float:
         """
         
         """
-        return np.exp(-self.r * self.T) * np.sum(np.maximum(self.__simulate_asset_price()[-1] - self.K, 0)) / self.simulations
+        return np.exp(-self.r * self.T) * np.sum(np.maximum(self.__simulate_asset_price() - self.K, 0)) / self.simulations
 
     def __put_option_price(self) -> float:
         """
         
         """
-        return np.exp(-self.r * self.T) * np.sum(np.maximum(self.K - self.__simulate_asset_price()[-1], 0)) / self.simulations
+        return np.exp(-self.r * self.T) * np.sum(np.maximum(self.K - self.__simulate_asset_price(), 0)) / self.simulations
