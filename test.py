@@ -2,10 +2,10 @@ from datetime import date
 
 # from option_pricing_models.vanilla import BlackScholesMerton, BinomialModel, MonteCarloSimulation
 
-from option_pricing_models import vanilla
+from option_pricing_models import Vanilla, American
 
 instrument = 'AAPL'
-option_type = 'CAll'
+option_type = 'put'
 spot = 95
 strike = 100
 rate = 0.03
@@ -19,7 +19,7 @@ time_steps = 1000
 simulations = 100_000
 
 
-BSM = vanilla.BlackScholesMerton(
+BSM = Vanilla.BlackScholesMerton(
     instrument, 
     option_type,
     spot,
@@ -35,7 +35,7 @@ BSM = vanilla.BlackScholesMerton(
 print('Black Scholes Merton:\n', BSM.option_price())
 
 
-BT = vanilla.BinomialModel(
+BT = Vanilla.BinomialModel(
     instrument, 
     option_type,
     spot,
@@ -52,7 +52,7 @@ BT = vanilla.BinomialModel(
 print('Binomial Tree:\n', BT.option_price())
 
 
-MC = vanilla.MonteCarloSimulation(
+MC = Vanilla.MonteCarloSimulation(
     instrument, 
     option_type,
     spot,
@@ -67,4 +67,20 @@ MC = vanilla.MonteCarloSimulation(
     simulations
 )
 
-print('Monte Carlo:\n', MC.option_price())
+# print('Monte Carlo:\n', MC.option_price())
+
+American_BT = American.BinomialModel(
+    instrument, 
+    option_type,
+    spot,
+    strike, 
+    rate,
+    sigma,
+    dividend,
+    None,
+    start,
+    end,
+    time_steps
+)
+
+print('American Binomial:\n', American_BT.option_price())

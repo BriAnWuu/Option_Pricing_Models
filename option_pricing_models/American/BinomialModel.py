@@ -81,13 +81,22 @@ class BinomialModel(OptionPricingModel):
         # Initialize price vector
         V = np.zeros(self.time_steps + 1)
 
+        # S_t
+        S_t = self.__asset_price_at_maturity()
+
         # Option value at maturity T
-        V[:] = np.maximum(self.__asset_price_at_maturity() - self.K, 0)
+        V[:] = np.maximum(S_t - self.K, 0)
 
         # Calculate option value at each time step
         for i in range(self.time_steps - 1, -1, -1):
             V[:i+1] = np.exp(-self.r * self.dT) * (self.q * V[1:i+2] + (1 - self.q) * V[:i+1])
-        
+            
+            # Spot price at this time step
+            S_t[:i+1] = S_t[:i+1] * self.u
+
+            # If optimal to exercise
+            V[:i+1] = np.maximum(V[:i+1], S_t[:i+1] - self.K)
+
         return V[0]
 
     def __put_option_price(self) -> float:
@@ -97,11 +106,20 @@ class BinomialModel(OptionPricingModel):
         # Initialize price vector
         V = np.zeros(self.time_steps + 1)
 
+        # S_t
+        S_t = self.__asset_price_at_maturity()
+
         # Option value at maturity T
-        V[:] = np.maximum(self.K - self.__asset_price_at_maturity(), 0)
+        V[:] = np.maximum(self.K - S_t, 0)
 
         # Calculate option value at each time step
         for i in range(self.time_steps - 1, -1, -1):
             V[:i+1] = np.exp(-self.r * self.dT) * (self.q * V[1:i+2] + (1 - self.q) * V[:i+1])
-        
+            
+            # Spot price at this time step
+            S_t[:i+1] = S_t[:i+1] * self.u
+
+            # If optimal to exercise
+            V[:i+1] = np.maximum(V[:i+1], self.K - S_t[:i+1])
+
         return V[0]
