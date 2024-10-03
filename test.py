@@ -5,16 +5,16 @@ from datetime import date
 from option_pricing_models import Vanilla, American
 
 instrument = 'AAPL'
-option_type = 'put'
-spot = 95
+option_type = 'call'
+spot = 98
 strike = 100
-rate = 0.03
+rate = 0.02
 sigma = 0.2
 dividend = 0.01
 t = 30
 start = date(2024, 1, 13)
 # start = None
-end = date(2024, 2, 13)
+end = date(2025, 2, 13)
 time_steps = 1000
 simulations = 100_000
 
